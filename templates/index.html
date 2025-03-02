@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printing Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input { width: 60%; padding: 10px; }
+        button { padding: 10px 15px; }
+        #response { margin-top: 20px; font-weight: bold; }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+        .navbar img {
+            height: 50px; /* Adjust based on your logo size */
+        }
+    </style>
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("userInput").value;
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: userInput })
+            });
+            let data = await response.json();
+            document.getElementById("response").innerText = data.response;
+
+            // Clear previous images
+            let imagesContainer = document.getElementById("images");
+            imagesContainer.innerHTML = "";
+
+            // Display images if available
+            if (data.images && data.images.length > 0) {
+                data.images.forEach(imgUrl => {
+                    let imgElement = document.createElement("img");
+                    imgElement.src = imgUrl;
+                    imagesContainer.appendChild(imgElement);
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <img src="static/images/printIQ.png" alt="Logo">
+    </div>
+
+    <h2>Ask me about 3D Printing!</h2>
+    <input type="text" id="userInput" placeholder="Type your question here...">
+    <button onclick="sendMessage()">Ask</button>
+    <p id="response"></p>
+    <div id="images"></div> <!-- Images will be displayed here -->
+</body>
+</html>
